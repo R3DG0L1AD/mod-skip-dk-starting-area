@@ -93,10 +93,16 @@ void Azerothcore_skip_deathknight_HandleSkip(Player* player)
 
     for (int questId : STARTER_QUESTS)
     {
+        // FAMWOW: custom races (12+) have no race quest (-1) -> null template crashed the server
+        if (questId <= 0)
+            continue;
+        Quest const* quest = sObjectMgr->GetQuestTemplate(questId);
+        if (!quest)
+            continue;
         if (player->GetQuestStatus(questId) == QUEST_STATUS_NONE)
         {
-            player->AddQuest(sObjectMgr->GetQuestTemplate(questId), nullptr);
-            player->RewardQuest(sObjectMgr->GetQuestTemplate(questId), 0, player, false);
+            player->AddQuest(quest, nullptr);
+            player->RewardQuest(quest, 0, player, false);
         }
     }
 
